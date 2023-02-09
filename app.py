@@ -2,6 +2,8 @@
 from flask import Flask, render_template, request, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
+from registerform import RegisterForm
+
 app = Flask(__name__)
 
 app.config.update(
@@ -22,13 +24,15 @@ debug = DebugToolbarExtension(app)
 @app.route('/')
 def home():
     """ Home route """
-    raise
     return redirect('/')
 
 # GET /register
 # Show a form that when submitted will register/create a user. This form should accept a username, password, email, first_name, and last_name.
-
 # Make sure you are using WTForms and that your password input hides the characters that the user is typing!
+    
+@app.route('/register')
+def register_user():
+    """ Register route ( register a new user )"""
 
 # POST /register
 # Process the registration form by adding a new user. Then redirect to /secret
