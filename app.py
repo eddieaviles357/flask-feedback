@@ -33,6 +33,9 @@ def home():
 @app.route('/register')
 def register_user():
     """ Register route ( register a new user )"""
+    form = RegisterForm()
+
+    return render_template('register.html', form=form)
 
 # POST /register
 # Process the registration form by adding a new user. Then redirect to /secret
