@@ -6,11 +6,9 @@
 
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <ul class="flash-msg">
     {% for category, message in messages %}
-      <li class="{{ category }}">{{ message }}</li>
+      <div class="text-light p-3 bg-{{ category }}">{{ message }}</div>
     {% endfor %}
-    </ul>
   {% endif %}
 {% endwith %}
 
@@ -23,7 +21,7 @@
             if field.widget.input_type != 'hidden' %}
             <div class="form-group mb-3 col-sm-6">
         
-                {{ field.label(class_="form-label ") }}
+                {{ field.label(class_="form-label") }}
                 {{ field(class_="form-control")}}
                 {% for err in field.errors %}
                     <small class="form-text text-danger">
