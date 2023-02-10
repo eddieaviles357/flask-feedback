@@ -1,13 +1,14 @@
 
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
 from registerform import RegisterForm
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 
 app.config.update(
-    SQLALCHEMY_DATABASE_URI="postgresql:///feedback.sql",
+    SQLALCHEMY_DATABASE_URI="postgresql:///feedback",
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     # SQLALCHEMY_ECHO=True,
     SECRET_KEY="xxsecretxxkeyxxyesxx",
@@ -37,12 +38,42 @@ def home():
 def register_user():
     """ Register route ( register a new user ) """
     form = RegisterForm()
-    if form.validate_on_submit():
-        user = {k: form.data[k] for k in form.data if k != 'csrf_token'}
 
-        for k in form.data: print(k,form.data[k])
-        flash("Successfully Register", "success")
-        redirect('/secret')
+    if form.validate_on_submit():
+        # get user data from form exclude csrf_token key
+        user_dict = {k: form.data[k] for k in form.data if k != 'csrf_token'}
+        # user_dict = {
+        #     'username':     form['username'].data,
+        #     'password':     form['password'].data,
+        #     'email':        form['email'].data,
+        #     'first_name':   form['first_name'].data,
+        #     'last_name':    form['last_name'].data
+        #     }
+        # register user and hash password
+        user = User.register_user(user_dict['username'], user_dict['password'])
+        # enter the rest of the data that was submitted
+        user.email = user_dict['email']
+        user.first_name = user_dict['first_name']
+        user.last_name = user_dict['last_name']
+
+        db.session.add(user)
+        
+        try: # try to enter username  or email if error render register page again
+            db.session.commit()
+        except IntegrityError:
+            # failed so we rollback whatever data was in the session
+            db.session.rollback()
+            # add an error to be displayed via client form
+            form.username.errors.append('Username taken, Please enter a different username')
+            form.email.errors.append('Email taken, Please enter a different email')
+            flash("Invalid credentials", "danger")
+            # render client to try to register again
+            return render_template('register.html', form=form)
+        # add user to the client session
+        session['username'] = user.username
+        flash("Successfully Registered", "success")
+        # redirect to protected route
+        return redirect('/secret')
     return render_template('register.html', form=form)
 
 # GET /login
@@ -52,6 +83,10 @@ def register_user():
 
 # POST /login
 # Process the login form, ensuring the user is authenticated and going to /secret if so.
+@app.route('/login')
+def login_user():
+    """ Login user route """
+    return "<h1>Login route</h1>"
 
 # GET /secret
 # Return the text “You made it!” (don’t worry, we’ll get rid of this soon)
