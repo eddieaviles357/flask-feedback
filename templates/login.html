@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+  {% for category, message in messages %}
+    <div class="text-light p-3 bg-{{ category }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+{% endwith %}
+
+  <h1>Register</h1>
+
+  <form action="/register" method="POST" class="row">
+      {{ form.hidden_tag() }}
+
+      {% for field in form 
+          if field.widget.input_type != 'hidden' %}
+          <div class="form-group mb-3 col-sm-6">
+      
+              {{ field.label(class_="form-label") }}
+              {{ field(class_="form-control")}}
+              {% for err in field.errors %}
+                  <small class="form-text text-danger">
+                      {{ err }}
+                  </small>    
+              {% endfor %}
+          </div>
+      {% endfor %}
+      <div class="btn-group d-block my-auto">
+          <button class="btn btn-success rounded" type="submit">Submit</button>
+      </div>
+  </form>
+  
+{% endblock %}
