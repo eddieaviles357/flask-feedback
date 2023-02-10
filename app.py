@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
-from registerform import RegisterForm
+from registerform import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -78,7 +78,11 @@ def register_user():
 
 # GET /login
 # Show a form that when submitted will login a user. This form should accept a username and a password.
-
+@app.route('/login')
+def get_login():
+    """ Get login form route """
+    form = LoginForm()
+    return render_template('login.html', form=form)
 # Make sure you are using WTForms and that your password input hides the characters that the user is typing!
 
 # POST /login
