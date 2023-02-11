@@ -22,7 +22,7 @@ class User(db.Model):
     last_name = db.Column(db.String(30), nullable=False)
 
     def __repr__(self):
-        return f"<User username={self.username}, pswrd={self.password}, email={self.email}, first_name={self.first_name}, last_name={self.last_name}>"
+        return f"<User username={self.username}, password={self.password}, email={self.email}, first_name={self.first_name}, last_name={self.last_name}>"
 
     @classmethod
     def register_user(cls, username, pswrd):
@@ -36,9 +36,12 @@ class User(db.Model):
     @classmethod
     def authenticate_user(cls, username, pswrd):
         """ Authenticate user """
-        # Get user by username then check against password entered
-        user = User.query.filter_by(username=username).first()
-        is_user_authenticated = bcrypt.check_password_hash(user.password, pswrd)
-
-        # return user instance if password was a match
-        return user if user and is_user_authenticated else False
+        # check entered password against database passwrod
+        try:
+            user = User.query.filter_by(username=username).first()
+            is_user_authenticated = bcrypt.check_password_hash(user.password, pswrd)
+            # was password a match
+            return is_user_authenticated
+        except AttributeError as AtrErr:
+            # username doesn't exist
+            return False
