@@ -42,13 +42,6 @@ def register_user():
     if form.validate_on_submit():
         # get user data from form exclude csrf_token key
         user_dict = {k: form.data[k] for k in form.data if k != 'csrf_token'}
-        # user_dict = {
-        #     'username':     form['username'].data,
-        #     'password':     form['password'].data,
-        #     'email':        form['email'].data,
-        #     'first_name':   form['first_name'].data,
-        #     'last_name':    form['last_name'].data
-        #     }
         # register user and hash password
         user = User.register_user(user_dict['username'], user_dict['password'])
         # enter the rest of the data that was submitted
@@ -120,6 +113,5 @@ def secret_route():
 def logout_user():
     """ Logout user route """
     session.pop('username')
-    form = LoginForm()
-    flash('Logout successful', 'success')
-    return render_template('login.html', form=form)
+    flash('Signed out successful', 'success')
+    return redirect('/')
