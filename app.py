@@ -88,14 +88,14 @@ def get_login():
     # only true if it's a POST route
     if form.validate_on_submit():
         username = form.username.data
-        print(f'\n\n{username}')
         password = form.password.data
-        print(f'\n\n{password}')
+        # check credential for a match in the database
         if User.authenticate_user(username, password):
             flash(f'Welcome {username}', 'success')
             session['username'] = username
             return redirect('/secret')
         else:
+            # user did not enter valid credetials
             flash('Wrong credentials', 'danger')
             return render_template('login.html', form=form)
 
