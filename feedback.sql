@@ -16,6 +16,14 @@ CREATE TABLE users
     last_name VARCHAR(30) NOT NULL
 );
 
+CREATE TABLE feedbacks
+(
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    username_key VARCHAR(20) REFERENCES users
+);
+
 INSERT INTO users ( username, password, email, first_name, last_name )
 VALUES
 ('eddie123','$2b$12$DxGUSeUO8T71X4waAGJvRODEXhqmXQmfk2wYAAdJeaSqTMZoizbYO', 'eddie1234@yahoo.com', 'Edward', 'Avile'),
