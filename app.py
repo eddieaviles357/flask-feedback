@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
-from registerform import RegisterForm, LoginForm
+from form import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -78,19 +78,29 @@ def register_user():
 
 # GET /login
 # Show a form that when submitted will login a user. This form should accept a username and a password.
-@app.route('/login')
+# POST /login
+# Process the login form, ensuring the user is authenticated and going to /secret if so.
+@app.route('/login', methods=["GET", "POST"])
 def get_login():
     """ Get login form route """
     form = LoginForm()
-    return render_template('login.html', form=form)
-# Make sure you are using WTForms and that your password input hides the characters that the user is typing!
 
-# POST /login
-# Process the login form, ensuring the user is authenticated and going to /secret if so.
-@app.route('/login')
-def login_user():
-    """ Login user route """
-    return "<h1>Login route</h1>"
+    # only true if it's a POST route
+    if form.validate_on_submit():
+        username = form.username.data
+        print(f'\n\n{username}')
+        password = form.password.data
+        print(f'\n\n{password}')
+        if User.authenticate_user(username, password):
+            flash(f'Welcome {username}', 'success')
+            session['username'] = username
+            return redirect('/secret')
+        else:
+            flash('Wrong credentials', 'danger')
+            return render_template('login.html', form=form)
+
+    # Get route
+    return render_template('login.html', form=form)
 
 # GET /secret
 # Return the text “You made it!” (don’t worry, we’ll get rid of this soon)
