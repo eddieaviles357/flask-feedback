@@ -107,4 +107,11 @@ def get_login():
 @app.route('/secret')
 def secret_route():
     """ Secret route """
-    return "<h1>You made it!!</h1>"
+    # does user have access
+    if session.get('username', None):
+        return "<h1>You made it!!</h1>"
+    else:
+        # user does not have access
+        form = LoginForm()
+        flash('Not allowed, Please enter credentials', 'warning')
+        return render_template('login.html', form=form)
