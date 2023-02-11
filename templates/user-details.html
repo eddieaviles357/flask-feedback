@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{user.first_name}}'s Details{% endblock %}
+
+{% include 'flash-msg.html' %}
+
+{% block content %}
+
+<h1>{{user.first_name}}'s details</h1>
+
+<div class="bg-primary p-5 rounded row text-white">
+    <div class="fw-bold col-6 ">Fullname: <span class="fw-normal">{{ user.first_name }} {{ user.last_name }}</span></div>
+    <div class="fw-bold col-6">Email: <span class="fw-normal">{{ user.email }}</span></div>
+</div>
+
+{% endblock %}
