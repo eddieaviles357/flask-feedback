@@ -113,5 +113,13 @@ def secret_route():
     else:
         # user does not have access
         form = LoginForm()
-        flash('Not allowed, Please enter credentials', 'warning')
+        flash('Please Login to access', 'warning')
         return render_template('login.html', form=form)
+
+@app.route('/logout')
+def logout_user():
+    """ Logout user route """
+    session.pop('username')
+    form = LoginForm()
+    flash('Logout successful', 'success')
+    return render_template('login.html', form=form)
