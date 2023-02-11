@@ -4,6 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, db
 from form import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
+from markupsafe import escape
 
 app = Flask(__name__)
 
@@ -115,3 +116,21 @@ def logout_user():
     session.pop('username')
     flash('Signed out successful', 'success')
     return redirect('/')
+
+# GET /users/<username>
+# Display a template the shows information about that user (everything except for their password)
+# You should ensure that only logged in users can access this page.
+@app.route('/users/<username>')
+def user_details(username):
+    # escape characters
+    usn = escape(username)
+    """ User details ( protected route )"""
+    user = User.query.get_or_404(username)
+    if session.get('username') == user.username:
+        # access 
+        return render_template('user-details.html', user=user)
+    else:
+        # user does not have access
+        form = LoginForm()
+        flash('Please Login to access', 'warning')
+        return render_template('login.html', form=form)
