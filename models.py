@@ -21,6 +21,9 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
+    # relation to Feedback model
+    feedback = db.relationship('Feedback', backref='users')
+
     def __repr__(self):
         return f"<User username={self.username}, password={self.password}, email={self.email}, first_name={self.first_name}, last_name={self.last_name}>"
 
@@ -45,3 +48,17 @@ class User(db.Model):
         except AttributeError as AtrErr:
             # username doesn't exist
             return False
+
+
+class Feedback(db.Model):
+    """ Feedback Model """
+
+    __tablename__ = 'feedbacks'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    username_key = db.Column(db.ForeignKey('users.username', ondelete='CASCADE'))
+
+    def __repr__(self):
+        return f"<Feedback id={self.id}, title={self.title}, content={self.content}, username_key={self.username_key}>"
