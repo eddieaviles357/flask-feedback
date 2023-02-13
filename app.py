@@ -5,6 +5,7 @@ from models import connect_db, User, Feedback, db
 from form import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
 from markupsafe import escape
+from utils import is_user_in_session
 
 app = Flask(__name__)
 
@@ -111,7 +112,7 @@ def user_details(username):
     username = escape(username)
     """ User details ( protected route )"""
     user = User.query.get_or_404(username)
-    if session.get('username') == user.username:
+    if is_user_in_session(user.username):
         # access 
         feedbacks = Feedback.query.filter_by(username_key=user.username)
         return render_template('user-details.html', user=user, feedbacks=feedbacks)
@@ -130,7 +131,7 @@ def user_details(username):
 def delete_user(username):
     """ Delete user """
     user = User.query.get_or_404(username)
-    if session.get('username') == user.username:
+    if is_user_in_session(user.username):
         # access
         db.session.delete(user)
         db.session.commit()
@@ -149,8 +150,14 @@ def delete_user(username):
 def add_feedback(username):
     """ Add feddback route """
     username = escape(username)
-    form = FeedbackForm()
-    return render_template('add-feedback.html', form=form)
+    user = User.query.get_or_404(username)
+    if is_user_in_session(user.username):
+        form = FeedbackForm()
+        return render_template('add-feedback.html', form=form)
+    else:
+        form = LoginForm()
+        flash('Not allowed to do that', 'danger')
+        return render_template('login.html', form=form)
 
 # POST /users/<username>/feedback/add
 # Add a new piece of feedback and redirect to /users/<username> — 
