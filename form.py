@@ -23,3 +23,8 @@ class LoginForm(FlaskForm):
 
     password = PasswordField("Password", validators=[
                           InputRequired(message="Please Enter a Password")])
+
+class FeedbackForm(FlaskForm):
+    """ Feedback Form for adding feedbacks """
+    title = StringField("Title", validators=[InputRequired(message="Please Enter Title"), Length(max=100)])
+    content = StringField("Content", validators=[InputRequired(message="Please enter content")])
