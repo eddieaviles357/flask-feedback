@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import connect_db, User, db
+from models import connect_db, User, Feedback, db
 from form import RegisterForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 from markupsafe import escape
@@ -67,7 +67,7 @@ def register_user():
         session['username'] = user.username
         flash("Successfully Registered", "success")
         # redirect to protected route
-        return redirect('/secret')
+        return redirect(f'/users/{user.username}')
     return render_template('register.html', form=form)
 
 # GET /login
@@ -87,7 +87,7 @@ def get_login():
         if User.authenticate_user(username, password):
             flash(f'Welcome {username}', 'success')
             session['username'] = username
-            return redirect('/secret')
+            return redirect(f'/users/{username}')
         else:
             # user did not enter valid credetials
             flash('Wrong credentials', 'danger')
@@ -96,20 +96,8 @@ def get_login():
     # Get route
     return render_template('login.html', form=form)
 
-# GET /secret
-# Return the text “You made it!” (don’t worry, we’ll get rid of this soon)
-@app.route('/secret')
-def secret_route():
-    """ Secret route """
-    # does user have access
-    if session.get('username', None):
-        return "<h1>You made it!!</h1>"
-    else:
-        # user does not have access
-        form = LoginForm()
-        flash('Please Login to access', 'warning')
-        return render_template('login.html', form=form)
 
+# GET /logout
 @app.route('/logout')
 def logout_user():
     """ Logout user route """
@@ -123,14 +111,56 @@ def logout_user():
 @app.route('/users/<username>')
 def user_details(username):
     # escape characters
-    usn = escape(username)
+    username = escape(username)
     """ User details ( protected route )"""
     user = User.query.get_or_404(username)
     if session.get('username') == user.username:
         # access 
-        return render_template('user-details.html', user=user)
+        feedbacks = Feedback.query.filter_by(username_key=user.username)
+        return render_template('user-details.html', user=user, feedbacks=feedbacks)
     else:
         # user does not have access
         form = LoginForm()
         flash('Please Login to access', 'warning')
         return render_template('login.html', form=form)
+
+
+# POST /users/<username>/delete
+# Remove the user from the database and make sure to also delete all of their feedback. 
+# Clear any user information in the session and redirect to /. 
+# Make sure that only the user who is logged in can successfully delete their account
+@app.route('/users/<username>/delete', methods=["POST"])
+def delete_user(username):
+    """ Delete user """
+    user = User.query.get_or_404(username)
+    if session.get('username') == user.username:
+        # access
+        db.session.delete(user)
+        db.session.commit()
+        flash('User Deleted', 'danger')
+        return redirect('/login')
+    else:
+        flash('Can\'t do that please login')
+        redirect('/login')
+
+# GET /users/<username>/feedback/add
+# Display a form to add feedback Make sure that only the user who is logged in can see this form
+
+
+# POST /users/<username>/feedback/add
+# Add a new piece of feedback and redirect to /users/<username> — 
+# Make sure that only the user who is logged in can successfully add feedback
+
+
+# GET /feedback/<feedback-id>/update
+# Display a form to edit feedback — **Make sure that only the user who has written that feedback can see this form **
+
+
+# POST /feedback/<feedback-id>/update
+# Update a specific piece of feedback and redirect to /users/<username> — 
+# Make sure that only the user who has written that feedback can update it
+
+
+# POST /feedback/<feedback-id>/delete
+# Delete a specific piece of feedback and redirect to /users/<username> — 
+# Make sure that only the user who has written that feedback can delete it
