@@ -106,8 +106,6 @@ def logout_user():
     return redirect('/')
 
 # GET /users/<username>
-# Display a template the shows information about that user (everything except for their password)
-# You should ensure that only logged in users can access this page.
 @app.route('/users/<username>')
 def user_details(username):
     # escape characters
@@ -137,9 +135,11 @@ def delete_user(username):
         # access
         db.session.delete(user)
         db.session.commit()
+        session.pop('username') # remove user from session
         flash('User Deleted', 'danger')
         return redirect('/login')
     else:
+        # can't delete user redirect
         flash('Can\'t do that please login')
         redirect('/login')
 
