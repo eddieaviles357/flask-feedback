@@ -22,7 +22,7 @@ class User(db.Model):
     last_name = db.Column(db.String(30), nullable=False)
 
     # relation to Feedback model
-    feedback = db.relationship('Feedback', backref='users')
+    feedback = db.relationship('Feedback', backref='users', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<User username={self.username}, password={self.password}, email={self.email}, first_name={self.first_name}, last_name={self.last_name}>"
@@ -58,7 +58,7 @@ class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    username_key = db.Column(db.ForeignKey('users.username', ondelete='CASCADE'))
+    username_key = db.Column(db.ForeignKey('users.username'))
 
     def __repr__(self):
         return f"<Feedback id={self.id}, title={self.title}, content={self.content}, username_key={self.username_key}>"

@@ -21,7 +21,7 @@ CREATE TABLE feedbacks
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     content TEXT NOT NULL,
-    username_key VARCHAR(20) REFERENCES users
+    username_key VARCHAR(20) REFERENCES users ON DELETE CASCADE
 );
 
 INSERT INTO users ( username, password, email, first_name, last_name )
