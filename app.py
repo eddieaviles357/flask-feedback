@@ -146,22 +146,36 @@ def delete_user(username):
 # GET /users/<username>/feedback/add
 # Displays a form to add feedback.
 # Only the user who is logged in can see this form
-@app.route('/users/<username>/feedback/add')
+
+# POST /users/<username>/feedback/add
+# Adds a new piece of feedback and redirects to /users/<username> — 
+@app.route('/users/<username>/feedback/add', methods=["GET", "POST"])
 def add_feedback(username):
     """ Add feddback route """
     username = escape(username)
     user = User.query.get_or_404(username)
+
     if is_user_in_session(user.username):
+        # User is in session
         form = FeedbackForm()
+        # POST
+        if form.validate_on_submit():
+            fb = {k: form.data[k] for k in form.data if k != 'csrf_token'}
+            feedback = Feedback(**fb, username_key=user.username)
+            db.session.add(feedback)
+            db.session.commit()
+            flash('Feedback added successfully', 'success')
+            return redirect(f'/users/{user.username}')
+        # GET
         return render_template('add-feedback.html', form=form)
     else:
+        # User is not in session
         form = LoginForm()
         flash('Can\'t do that please login', 'danger')
         return render_template('login.html', form=form)
 
-# POST /users/<username>/feedback/add
-# Adds a new piece of feedback and redirects to /users/<username> — 
-
+# @app.route('/users/<username>/feedback/add', methods=["POST"])
+# def add_feedback(username):
 
 # GET /feedback/<feedback-id>/update
 # Display a form to edit feedback — **Make sure that only the user who has written that feedback can see this form **
