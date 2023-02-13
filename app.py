@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, Feedback, db
-from form import RegisterForm, LoginForm
+from form import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
 from markupsafe import escape
 
