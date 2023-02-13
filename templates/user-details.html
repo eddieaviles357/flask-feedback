@@ -16,20 +16,22 @@
     </h3>
     <h3 class="fw-bold col-6">Email: <span class="fw-normal">{{ user.email }}</span></h3>
     <div class="col-12 mt-5">
+
         <ul class="list-group">
             {% for feedback in feedbacks %}
             <li class="list-group-item"">
                 <h5 class="">
                     <a href="/" class="text-primary">{{ feedback.title }}</a>
                     <span>
-                        <button class="btn btn-success">Edit</button>
-                        <button class="btn btn-danger">Delete</button>
+                        <a href="/feedback/{{ feedback.id }}/update" class="btn btn-success">Edit</a>
+                        <a href="/feedback/{{ feedback.id }}/delete" class="btn btn-danger">Delete</a>
                     </span>
                 </h5>
                 <div>{{ feedback.content }}</div>
             </li>
             {% endfor %}
         </ul>
+
     </div>
 </div>
 
