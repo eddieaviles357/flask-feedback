@@ -29,12 +29,8 @@ def home():
     return redirect('/register')
 
 # GET /register
-# Show a form that when submitted will register/create a user. 
-# This form should accept a username, password, email, first_name, and last_name.
-# Make sure you are using WTForms and that your password input hides the characters that the user is typing!
-    
 # POST /register
-# Process the registration form by adding a new user. Then redirect to /secret
+# Process the registration form by adding a new user. Then redirect to /users/<username>
 @app.route('/register', methods=["GET", "POST"])
 def register_user():
     """ Register route ( register a new user ) """
@@ -50,9 +46,9 @@ def register_user():
         user.first_name = user_dict['first_name']
         user.last_name = user_dict['last_name']
 
-        db.session.add(user)
         
         try: # try to enter username  or email if error render register page again
+            db.session.add(user)
             db.session.commit()
         except IntegrityError:
             # failed so we rollback whatever data was in the session
@@ -63,6 +59,7 @@ def register_user():
             flash("Invalid credentials", "danger")
             # render client to try to register again
             return render_template('register.html', form=form)
+
         # add user to the client session
         session['username'] = user.username
         flash("Successfully Registered", "success")
@@ -71,9 +68,10 @@ def register_user():
     return render_template('register.html', form=form)
 
 # GET /login
-# Show a form that when submitted will login a user. This form should accept a username and a password.
+# Shows a form that when submitted will login a user. 
+# This form accepts a username and a password.
 # POST /login
-# Process the login form, ensuring the user is authenticated and going to /secret if so.
+# Processes the login form, ensuring the user is authenticated and going to /users/<username>.
 @app.route('/login', methods=["GET", "POST"])
 def get_login():
     """ Get login form route """
@@ -104,6 +102,7 @@ def logout_user():
     session.pop('username')
     flash('Signed out successful', 'success')
     return redirect('/')
+
 
 # GET /users/<username>
 @app.route('/users/<username>')
@@ -144,7 +143,8 @@ def delete_user(username):
         redirect('/login')
 
 # GET /users/<username>/feedback/add
-# Display a form to add feedback Make sure that only the user who is logged in can see this form
+# Displays a form to add feedback.
+# Only the user who is logged in can see this form
 @app.route('/users/<username>feedback/add')
 def add_feedback(username):
     """ Add feddback route """
