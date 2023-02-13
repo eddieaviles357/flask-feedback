@@ -174,12 +174,22 @@ def add_feedback(username):
         flash('Can\'t do that please login', 'danger')
         return render_template('login.html', form=form)
 
-# @app.route('/users/<username>/feedback/add', methods=["POST"])
-# def add_feedback(username):
 
 # GET /feedback/<feedback-id>/update
-# Display a form to edit feedback — **Make sure that only the user who has written that feedback can see this form **
-
+# Displays a form to edit feedback —
+@app.route('/feedback/<feedback_id>/update')
+def update_feedback(feedback_id):
+    """ Update feedback route """
+    feedback = Feedback.query.filter_by(id=feedback_id).first()
+    # Is the user in session match
+    try:
+        if is_user_in_session(feedback.username_key):
+            form = FeedbackForm(obj=feedback)
+            return render_template('edit-feedback.html', form=form, feedback=feedback)
+    except AttributeError:
+        form = LoginForm()
+        flash('Can\'t do that please login', 'danger')
+        return render_template('login.html', form=form)
 
 # POST /feedback/<feedback-id>/update
 # Update a specific piece of feedback and redirect to /users/<username> — 
