@@ -156,12 +156,11 @@ def add_feedback(username):
         return render_template('add-feedback.html', form=form)
     else:
         form = LoginForm()
-        flash('Not allowed to do that', 'danger')
+        flash('Can\'t do that please login', 'danger')
         return render_template('login.html', form=form)
 
 # POST /users/<username>/feedback/add
-# Add a new piece of feedback and redirect to /users/<username> — 
-# Make sure that only the user who is logged in can successfully add feedback
+# Adds a new piece of feedback and redirects to /users/<username> — 
 
 
 # GET /feedback/<feedback-id>/update
