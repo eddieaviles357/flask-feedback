@@ -145,12 +145,12 @@ def delete_user(username):
 # GET /users/<username>/feedback/add
 # Displays a form to add feedback.
 # Only the user who is logged in can see this form
-@app.route('/users/<username>feedback/add')
+@app.route('/users/<username>/feedback/add')
 def add_feedback(username):
     """ Add feddback route """
     username = escape(username)
-    # form = 
-    return "<h1>hi</h1>"
+    form = FeedbackForm()
+    return render_template('add-feedback.html', form=form)
 
 # POST /users/<username>/feedback/add
 # Add a new piece of feedback and redirect to /users/<username> — 
