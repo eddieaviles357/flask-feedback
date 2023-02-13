@@ -22,7 +22,7 @@ class User(db.Model):
     last_name = db.Column(db.String(30), nullable=False)
 
     # relation to Feedback model
-    feedback = db.relationship('Feedback', backref='users', cascade='all, delete-orphan')
+    feedback = db.relationship('Feedback', backref='user', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<User username={self.username}, password={self.password}, email={self.email}, first_name={self.first_name}, last_name={self.last_name}>"
