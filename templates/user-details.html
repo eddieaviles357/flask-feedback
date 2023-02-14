@@ -24,12 +24,15 @@
                     <a href="/" class="text-primary">{{ feedback.title }}</a>
                     <span>
                         <a href="/feedback/{{ feedback.id }}/update" class="btn btn-success">Edit</a>
-                        <a href="/feedback/{{ feedback.id }}/delete" class="btn btn-danger">Delete</a>
+                        <form class="d-inline" action="/feedback/{{ feedback.id }}/delete" method="POST"><button class="btn btn-danger">Delete</button></form>
                     </span>
                 </h5>
                 <div>{{ feedback.content }}</div>
             </li>
             {% endfor %}
+            <div class="mx-auto w-50 mt-5">
+                <a class="btn btn-black d-block bg-info border border-dark" href="/users/{{ user.username }}/feedback/add">Add Feedback</a>
+            </div>
         </ul>
 
     </div>
