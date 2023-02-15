@@ -23,7 +23,7 @@
                 <h5 class="">
                     <a href="/" class="text-primary">{{ feedback.title }}</a>
                     <span class="d-inline-block">
-                        <a href="/feedback/ {{feedback.id}} /update" class="btn btn-success">Edit</a>
+                        <a href="/feedback/{{feedback.id}}/update" class="btn btn-success">Edit</a>
                         <form class="d-inline" action="/feedback/{{ feedback.id }}/delete" method="POST"><button class="btn btn-danger">Delete</button></form>
                     </span>
                 </h5>
