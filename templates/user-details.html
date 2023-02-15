@@ -8,7 +8,7 @@
 
 <h1>{{user.first_name}}'s details</h1>
 
-<div class="bg-primary p-5 rounded row text-white">
+<div class="bg-primary p-3 rounded row text-white">
     <h3 class="fw-bold col-6 ">Fullname: 
         <span class="fw-normal">{{ user.first_name }} {{ user.last_name }}
             <form action="/users/{{user.username}}/delete" method="POST"><button class="btn btn-danger">Delete</button></form>
@@ -22,8 +22,8 @@
             <li class="list-group-item"">
                 <h5 class="">
                     <a href="/" class="text-primary">{{ feedback.title }}</a>
-                    <span>
-                        <a href="/feedback/{{ feedback.id }}/update" class="btn btn-success">Edit</a>
+                    <span class="d-inline-block">
+                        <a href="/feedback/ {{feedback.id}} /update" class="btn btn-success">Edit</a>
                         <form class="d-inline" action="/feedback/{{ feedback.id }}/delete" method="POST"><button class="btn btn-danger">Delete</button></form>
                     </span>
                 </h5>
