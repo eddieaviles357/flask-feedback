@@ -5,7 +5,7 @@ from models import connect_db, User, Feedback, db
 from form import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
 from markupsafe import escape
-from utils import is_user_in_session
+from utils import is_user_in_session, redirect_to_login_with_flash_message
 
 app = Flask(__name__)
 
@@ -118,9 +118,7 @@ def user_details(username):
         return render_template('user-details.html', user=user, feedbacks=feedbacks)
     else:
         # user does not have access
-        form = LoginForm()
-        flash('Please Login to access', 'warning')
-        return render_template('login.html', form=form)
+        return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
 
 
 # POST /users/<username>/delete
@@ -140,8 +138,11 @@ def delete_user(username):
         return redirect('/login')
     else:
         # can't delete user redirect
-        flash('Can\'t do that please login')
-        redirect('/login')
+        return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
+
+# *****************************************
+# **************** FEEDBACK ***************
+# *****************************************
 
 # GET /users/<username>/feedback/add
 # Displays a form to add feedback.
@@ -170,32 +171,53 @@ def add_feedback(username):
         return render_template('add-feedback.html', form=form)
     else:
         # User is not in session
-        form = LoginForm()
-        flash('Can\'t do that please login', 'danger')
-        return render_template('login.html', form=form)
+        return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
 
 
 # GET /feedback/<feedback-id>/update
 # Displays a form to edit feedback —
-@app.route('/feedback/<feedback_id>/update')
+# POST /feedback/<feedback-id>/update
+# Updates a specific piece of feedback and redirects to /users/<username> — 
+@app.route('/feedback/<feedback_id>/update', methods=["GET", "POST"])
 def update_feedback(feedback_id):
     """ Update feedback route """
-    feedback = Feedback.query.filter_by(id=feedback_id).first()
     # Is the user in session match
     try:
-        if is_user_in_session(feedback.username_key):
+        feedback = Feedback.query.filter_by(id=feedback_id).first()
+        username = feedback.username_key
+        if is_user_in_session(username):
+            form = FeedbackForm()
+            # POST
+            if form.validate_on_submit():
+                fb = {k: form.data[k] for k in form.data if k != 'csrf_token'}
+                feedback.title = fb['title']
+                feedback.content = fb['content']
+                db.session.commit()
+                flash('Feedback updated', 'success')
+                return redirect(f'/users/{username}')
+            # GET
+            # prepopulate form with current feedback information
             form = FeedbackForm(obj=feedback)
             return render_template('edit-feedback.html', form=form, feedback=feedback)
     except AttributeError:
-        form = LoginForm()
-        flash('Can\'t do that please login', 'danger')
-        return render_template('login.html', form=form)
-
-# POST /feedback/<feedback-id>/update
-# Update a specific piece of feedback and redirect to /users/<username> — 
-# Make sure that only the user who has written that feedback can update it
-
+        return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
+    
+    return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
 
 # POST /feedback/<feedback-id>/delete
 # Delete a specific piece of feedback and redirect to /users/<username> — 
-# Make sure that only the user who has written that feedback can delete it
+@app.route('/feedback/<feedback_id>/delete', methods=["POST"])
+def delete_feedback(feedback_id):
+    """ Deletes a feedback """
+    try:
+        feedback = Feedback.query.filter_by(id=feedback_id).first()
+        username = feedback.username_key
+        if is_user_in_session(username):
+            # user has access
+            db.session.delete(feedback)
+            db.session.commit()
+            flash('Deleted Feedback', 'danger')
+            return redirect(f'/users/{username}')
+    except AttributeError:
+        return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
+    return redirect_to_login_with_flash_message('Can\'t do that please login', 'danger')
