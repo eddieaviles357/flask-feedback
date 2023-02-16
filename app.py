@@ -6,14 +6,15 @@ from form import RegisterForm, LoginForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError, SAWarning
 from markupsafe import escape
 from utils import is_user_in_session, redirect_to_login_with_flash_message
+import os
 
 app = Flask(__name__)
 
 app.config.update(
-    SQLALCHEMY_DATABASE_URI="postgresql:///feedback",
+    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'postgresql:///feedback'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     # SQLALCHEMY_ECHO=True,
-    SECRET_KEY="xxsecretxxkeyxxyesxx",
+    SECRET_KEY=os.environ.get('SECRET_KEY', 'something_simple_shhh'),
     DEBUG_TB_INTERCEPT_REDIRECTS=False
 )
 
