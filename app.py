@@ -34,13 +34,10 @@ def page_not_found(err):
 @app.route('/')
 def home():
     """ Home route """
-    print('\n\n\n\n\n', session.get('username', 'what the'), 'username\n\n\n\n\n')
     try:
         user = User.query.get_or_404(session['username'])
         if is_user_in_session(user.username):
             return redirect(f'/users/{user.username}')
-    # except SAWarning:
-    #     return redirect('/register')
     except KeyError:
         return redirect('/register')
     return redirect('/register')
