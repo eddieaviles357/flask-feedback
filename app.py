@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import connect_db, User, Feedback, db
 from form import RegisterForm, LoginForm, FeedbackForm
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SAWarning
 from markupsafe import escape
 from utils import is_user_in_session, redirect_to_login_with_flash_message
 
@@ -21,13 +21,30 @@ app.config.update(
 connect_db(app)
 
 debug = DebugToolbarExtension(app)
+
+
+@app.errorhandler(404)
+def page_not_found(err):
+    """ Custom 404 page when url not found"""
+    return render_template('404.html'), 404
+
 # GET / 
 # Redirect to /register.
 
 @app.route('/')
 def home():
     """ Home route """
+    print('\n\n\n\n\n', session.get('username', 'what the'), 'username\n\n\n\n\n')
+    try:
+        user = User.query.get_or_404(session['username'])
+        if is_user_in_session(user.username):
+            return redirect(f'/users/{user.username}')
+    # except SAWarning:
+    #     return redirect('/register')
+    except KeyError:
+        return redirect('/register')
     return redirect('/register')
+        
 
 # GET /register
 # POST /register
