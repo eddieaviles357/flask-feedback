@@ -10,6 +10,8 @@ import os
 
 app = Flask(__name__)
 
+database_url = os.environ.get('DATABASE_URL', 'postgresql:///feedback')
+database_url = database_url.replace('postgres://', 'postgresql://')
 app.config.update(
     SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'postgresql:///feedback'),
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
