@@ -13,7 +13,7 @@ app = Flask(__name__)
 database_url = os.environ.get('DATABASE_URL', 'postgresql:///feedback')
 database_url = database_url.replace('postgres://', 'postgresql://')
 app.config.update(
-    SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'postgresql:///feedback'),
+    SQLALCHEMY_DATABASE_URI=database_url,
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     # SQLALCHEMY_ECHO=True,
     SECRET_KEY=os.environ.get('SECRET_KEY', 'something_simple_shhh'),
