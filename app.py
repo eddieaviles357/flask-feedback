@@ -23,6 +23,8 @@ connect_db(app)
 
 debug = DebugToolbarExtension(app)
 
+db.drop_all()
+db.create_all()
 
 @app.errorhandler(404)
 def page_not_found(err):
